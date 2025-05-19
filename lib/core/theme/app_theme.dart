@@ -5,6 +5,7 @@ enum AppThemeType {
   fiery,
   cyberpunk,
   zenForest,
+  night,
 }
 
 class AppTheme {
@@ -129,6 +130,52 @@ class AppTheme {
             elevation: 4,
           ),
         );
+      case AppThemeType.night:
+        return ThemeData(
+          useMaterial3: true,
+          colorScheme: const ColorScheme.dark(
+            primary: Color(0xFF7E57C2), // Deep purple
+            onPrimary: Colors.white,
+            secondary: Color(0xFF9575CD), // Light purple
+            onSecondary: Colors.white,
+            error: Colors.red,
+            onError: Colors.white,
+            background: Color(0xFF121212), // Material dark background
+            onBackground: Colors.white,
+            surface: Color(0xFF1E1E1E), // Slightly lighter dark grey
+            onSurface: Colors.white,
+          ),
+          textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+          scaffoldBackgroundColor: const Color(0xFF121212),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: IconThemeData(color: Colors.white70),
+          ),
+          cardTheme: CardTheme(
+            color: const Color(0xFF1E1E1E),
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF7E57C2), // Deep purple
+              foregroundColor: Colors.white,
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+          popupMenuTheme: PopupMenuThemeData(
+            color: const Color(0xFF1E1E1E),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
     }
   }
 
@@ -170,6 +217,20 @@ class AppTheme {
           ),
           BoxShadow(
             color: const Color(0xFFD9CAB3).withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ];
+      case AppThemeType.night:
+        return [
+          BoxShadow(
+            color: const Color(0xFF7E57C2).withOpacity(0.3), // Deep purple glow
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color:
+                const Color(0xFF9575CD).withOpacity(0.2), // Light purple glow
             blurRadius: 10,
             spreadRadius: 1,
           ),
@@ -216,6 +277,19 @@ class AppTheme {
             ),
           ],
         );
+      case AppThemeType.night:
+        return GoogleFonts.poppins(
+          fontSize: 48,
+          fontWeight: FontWeight.bold,
+          color: Colors.white, // White color for contrast
+          shadows: [
+            Shadow(
+              color:
+                  const Color(0xFF9575CD).withOpacity(0.5), // Light purple glow
+              blurRadius: 15,
+            ),
+          ],
+        );
     }
   }
 
@@ -239,6 +313,12 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: const Color(0xFF228B22), // Forest Green
         );
+      case AppThemeType.night:
+        return GoogleFonts.poppins(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF7E57C2), // Deep purple
+        );
     }
   }
 
@@ -261,6 +341,12 @@ class AppTheme {
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: const Color(0xFF2E2E2E), // Deep Bark
+        );
+      case AppThemeType.night:
+        return GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: const Color(0xFFE0E0E0), // Light grey for visibility
         );
     }
   }

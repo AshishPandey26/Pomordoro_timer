@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../controllers/timer_controller.dart';
 import '../widgets/flame_progress_ring.dart';
 import '../widgets/timer_controls.dart';
 import '../widgets/flame_background.dart';
 import '../widgets/water_fill_animation.dart';
+import '../widgets/starry_background.dart';
 import '../../domain/timer_state.dart';
 import '../../themes/timer_theme.dart';
 import '../../domain/timer_settings.dart';
 import '../../../../core/theme/theme_provider.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../gamification/presentation/widgets/progress_display.dart';
 
 class TimerPage extends ConsumerStatefulWidget {
   const TimerPage({super.key});
@@ -24,10 +27,15 @@ class _TimerPageState extends ConsumerState<TimerPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _startAnimationController;
   late final Animation<double> _startAnimation;
+  late TextEditingController _taskNameController;
+  static const String _taskNameKey = 'taskName';
 
   @override
   void initState() {
     super.initState();
+    _taskNameController = TextEditingController();
+    _loadTaskName();
+
     _startAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),
@@ -39,9 +47,25 @@ class _TimerPageState extends ConsumerState<TimerPage>
     );
   }
 
+  Future<void> _loadTaskName() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedTaskName = prefs.getString(_taskNameKey);
+    if (savedTaskName != null) {
+      _taskNameController.text = savedTaskName;
+    }
+    _taskNameController.addListener(_saveTaskName);
+  }
+
+  Future<void> _saveTaskName() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(_taskNameKey, _taskNameController.text);
+  }
+
   @override
   void dispose() {
     _startAnimationController.dispose();
+    _taskNameController.removeListener(_saveTaskName);
+    _taskNameController.dispose();
     super.dispose();
   }
 
@@ -164,8 +188,35 @@ class _TimerPageState extends ConsumerState<TimerPage>
   @override
   Widget build(BuildContext context) {
     final timerState = ref.watch(timerControllerProvider);
-    final controller = ref.read(timerControllerProvider.notifier);
     final theme = Theme.of(context);
+    final controller = ref.read(timerControllerProvider.notifier);
+    final appThemeType = ref.watch(themeProvider);
+
+    // Show session summary when completed
+    if (timerState.status == TimerStatus.completed) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text('Session Complete! 🎯'),
+            content: Text(
+              'Great job! You focused for ${timerState.completedRounds * 25} minutes',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  controller.resetTimer();
+                },
+                child: const Text('Start New Session'),
+              ),
+            ],
+          ),
+        );
+      });
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -176,6 +227,8 @@ class _TimerPageState extends ConsumerState<TimerPage>
       ),
       body: Stack(
         children: [
+          // Starry background for night theme
+          if (appThemeType == AppThemeType.night) const StarryBackground(),
           // Animated flame background
           FlameBackground(
             progress: timerState.progress,
@@ -225,6 +278,10 @@ class _TimerPageState extends ConsumerState<TimerPage>
                           ref
                               .read(themeProvider.notifier)
                               .setTheme(AppThemeType.zenForest);
+                        } else if (value == 'night') {
+                          ref
+                              .read(themeProvider.notifier)
+                              .setTheme(AppThemeType.night);
                         }
                       },
                       itemBuilder: (context) => [
@@ -308,6 +365,30 @@ class _TimerPageState extends ConsumerState<TimerPage>
                             ],
                           ),
                         ),
+                        PopupMenuItem(
+                          value: 'night',
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 16,
+                                height: 16,
+                                decoration: BoxDecoration(
+                                  color: const Color(
+                                      0xFF7E57C2), // Deep purple color indicator
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Night Theme',
+                                style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const PopupMenuDivider(),
                         PopupMenuItem(
                           value: 'adjust_breaks',
@@ -363,6 +444,31 @@ class _TimerPageState extends ConsumerState<TimerPage>
                         ),
                       ),
                       const SizedBox(height: 12),
+                      // Add TextField for task name
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 40.0), // Adjust padding as needed
+                        child: TextField(
+                          controller: _taskNameController,
+                          decoration: InputDecoration(
+                            hintText: 'Enter task name (optional)',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                  12), // Match the rounded corners
+                              borderSide: BorderSide.none, // No border line
+                            ),
+                            filled: true,
+                            fillColor:
+                                theme.colorScheme.surface, // White background
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                          ),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: theme.colorScheme.onSurface), // Text color
+                        ),
+                      ),
+                      const SizedBox(height: 12), // Adjust spacing
                       // Round indicator with animation
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
@@ -454,6 +560,12 @@ class _TimerPageState extends ConsumerState<TimerPage>
                         ),
                       ),
                       const SizedBox(height: 40),
+                      // Progress Display
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: const ProgressDisplay(),
+                      ),
+                      const SizedBox(height: 24),
                       // Control buttons
                       TimerControls(
                         status: timerState.status,

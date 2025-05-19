@@ -21,8 +21,6 @@ mixin _$TimerState {
   int get elapsedSeconds => throw _privateConstructorUsedError;
   int get completedRounds => throw _privateConstructorUsedError;
   int get totalRounds => throw _privateConstructorUsedError;
-  bool get isBreak => throw _privateConstructorUsedError;
-  int get totalBreakTimeMinutes => throw _privateConstructorUsedError;
 
   /// Create a copy of TimerState
   /// with the given fields replaced by the non-null parameter values.
@@ -42,9 +40,7 @@ abstract class $TimerStateCopyWith<$Res> {
       int totalSeconds,
       int elapsedSeconds,
       int completedRounds,
-      int totalRounds,
-      bool isBreak,
-      int totalBreakTimeMinutes});
+      int totalRounds});
 }
 
 /// @nodoc
@@ -67,8 +63,6 @@ class _$TimerStateCopyWithImpl<$Res, $Val extends TimerState>
     Object? elapsedSeconds = null,
     Object? completedRounds = null,
     Object? totalRounds = null,
-    Object? isBreak = null,
-    Object? totalBreakTimeMinutes = null,
   }) {
     return _then(_value.copyWith(
       status: null == status
@@ -91,14 +85,6 @@ class _$TimerStateCopyWithImpl<$Res, $Val extends TimerState>
           ? _value.totalRounds
           : totalRounds // ignore: cast_nullable_to_non_nullable
               as int,
-      isBreak: null == isBreak
-          ? _value.isBreak
-          : isBreak // ignore: cast_nullable_to_non_nullable
-              as bool,
-      totalBreakTimeMinutes: null == totalBreakTimeMinutes
-          ? _value.totalBreakTimeMinutes
-          : totalBreakTimeMinutes // ignore: cast_nullable_to_non_nullable
-              as int,
     ) as $Val);
   }
 }
@@ -116,9 +102,7 @@ abstract class _$$TimerStateImplCopyWith<$Res>
       int totalSeconds,
       int elapsedSeconds,
       int completedRounds,
-      int totalRounds,
-      bool isBreak,
-      int totalBreakTimeMinutes});
+      int totalRounds});
 }
 
 /// @nodoc
@@ -139,8 +123,6 @@ class __$$TimerStateImplCopyWithImpl<$Res>
     Object? elapsedSeconds = null,
     Object? completedRounds = null,
     Object? totalRounds = null,
-    Object? isBreak = null,
-    Object? totalBreakTimeMinutes = null,
   }) {
     return _then(_$TimerStateImpl(
       status: null == status
@@ -163,14 +145,6 @@ class __$$TimerStateImplCopyWithImpl<$Res>
           ? _value.totalRounds
           : totalRounds // ignore: cast_nullable_to_non_nullable
               as int,
-      isBreak: null == isBreak
-          ? _value.isBreak
-          : isBreak // ignore: cast_nullable_to_non_nullable
-              as bool,
-      totalBreakTimeMinutes: null == totalBreakTimeMinutes
-          ? _value.totalBreakTimeMinutes
-          : totalBreakTimeMinutes // ignore: cast_nullable_to_non_nullable
-              as int,
     ));
   }
 }
@@ -183,9 +157,7 @@ class _$TimerStateImpl extends _TimerState {
       this.totalSeconds = 25 * 60,
       this.elapsedSeconds = 0,
       this.completedRounds = 0,
-      this.totalRounds = 4,
-      this.isBreak = false,
-      this.totalBreakTimeMinutes = 0})
+      this.totalRounds = 4})
       : super._();
 
   @override
@@ -203,16 +175,10 @@ class _$TimerStateImpl extends _TimerState {
   @override
   @JsonKey()
   final int totalRounds;
-  @override
-  @JsonKey()
-  final bool isBreak;
-  @override
-  @JsonKey()
-  final int totalBreakTimeMinutes;
 
   @override
   String toString() {
-    return 'TimerState(status: $status, totalSeconds: $totalSeconds, elapsedSeconds: $elapsedSeconds, completedRounds: $completedRounds, totalRounds: $totalRounds, isBreak: $isBreak, totalBreakTimeMinutes: $totalBreakTimeMinutes)';
+    return 'TimerState(status: $status, totalSeconds: $totalSeconds, elapsedSeconds: $elapsedSeconds, completedRounds: $completedRounds, totalRounds: $totalRounds)';
   }
 
   @override
@@ -228,22 +194,12 @@ class _$TimerStateImpl extends _TimerState {
             (identical(other.completedRounds, completedRounds) ||
                 other.completedRounds == completedRounds) &&
             (identical(other.totalRounds, totalRounds) ||
-                other.totalRounds == totalRounds) &&
-            (identical(other.isBreak, isBreak) || other.isBreak == isBreak) &&
-            (identical(other.totalBreakTimeMinutes, totalBreakTimeMinutes) ||
-                other.totalBreakTimeMinutes == totalBreakTimeMinutes));
+                other.totalRounds == totalRounds));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      status,
-      totalSeconds,
-      elapsedSeconds,
-      completedRounds,
-      totalRounds,
-      isBreak,
-      totalBreakTimeMinutes);
+  int get hashCode => Object.hash(runtimeType, status, totalSeconds,
+      elapsedSeconds, completedRounds, totalRounds);
 
   /// Create a copy of TimerState
   /// with the given fields replaced by the non-null parameter values.
@@ -260,9 +216,7 @@ abstract class _TimerState extends TimerState {
       final int totalSeconds,
       final int elapsedSeconds,
       final int completedRounds,
-      final int totalRounds,
-      final bool isBreak,
-      final int totalBreakTimeMinutes}) = _$TimerStateImpl;
+      final int totalRounds}) = _$TimerStateImpl;
   const _TimerState._() : super._();
 
   @override
@@ -275,10 +229,6 @@ abstract class _TimerState extends TimerState {
   int get completedRounds;
   @override
   int get totalRounds;
-  @override
-  bool get isBreak;
-  @override
-  int get totalBreakTimeMinutes;
 
   /// Create a copy of TimerState
   /// with the given fields replaced by the non-null parameter values.
