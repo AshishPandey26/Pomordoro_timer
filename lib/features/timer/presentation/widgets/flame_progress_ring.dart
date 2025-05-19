@@ -6,11 +6,13 @@ class FlameProgressRing extends StatelessWidget {
   final double progress;
   final double size;
   final VoidCallback? onTap;
+  final Color color;
 
   const FlameProgressRing({
     super.key,
     required this.progress,
     required this.size,
+    required this.color,
     this.onTap,
   });
 
@@ -24,7 +26,7 @@ class FlameProgressRing extends StatelessWidget {
         child: CustomPaint(
           painter: FlameProgressPainter(
             progress: progress,
-            color: Theme.of(context).colorScheme.primary,
+            color: color,
           ),
         ),
       ),

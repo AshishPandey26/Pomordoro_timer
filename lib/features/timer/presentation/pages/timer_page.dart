@@ -8,7 +8,8 @@ import '../widgets/timer_controls.dart';
 import '../widgets/flame_background.dart';
 import '../widgets/water_fill_animation.dart';
 import '../../domain/timer_state.dart';
-// import '../../themes/timer_theme.dart';
+import '../../themes/timer_theme.dart';
+import '../../domain/timer_settings.dart';
 
 class TimerPage extends ConsumerStatefulWidget {
   const TimerPage({super.key});
@@ -47,6 +48,117 @@ class _TimerPageState extends ConsumerState<TimerPage>
     ref.read(timerControllerProvider.notifier).startTimer();
   }
 
+  void _showAdjustBreaksDialog(BuildContext context) {
+    final settings = ref.read(timerSettingsProvider);
+    int shortBreak = settings.shortBreakMinutes;
+    int longBreak = settings.longBreakMinutes;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Adjust Break Duration'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Short Break (minutes)'),
+              trailing: Text('$shortBreak'),
+            ),
+            Slider(
+              value: shortBreak.toDouble(),
+              min: 1,
+              max: 15,
+              divisions: 14,
+              label: shortBreak.toString(),
+              onChanged: (value) {
+                shortBreak = value.round();
+                (context as Element).markNeedsBuild();
+              },
+            ),
+            ListTile(
+              title: const Text('Long Break (minutes)'),
+              trailing: Text('$longBreak'),
+            ),
+            Slider(
+              value: longBreak.toDouble(),
+              min: 5,
+              max: 30,
+              divisions: 25,
+              label: longBreak.toString(),
+              onChanged: (value) {
+                longBreak = value.round();
+                (context as Element).markNeedsBuild();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(timerSettingsProvider.notifier).updateSettings(
+                    shortBreakMinutes: shortBreak,
+                    longBreakMinutes: longBreak,
+                  );
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSetRoundsDialog(BuildContext context) {
+    final settings = ref.read(timerSettingsProvider);
+    int rounds = settings.focusRounds;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Set Focus Rounds'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Number of Rounds'),
+              trailing: Text('$rounds'),
+            ),
+            Slider(
+              value: rounds.toDouble(),
+              min: 1,
+              max: 10,
+              divisions: 9,
+              label: rounds.toString(),
+              onChanged: (value) {
+                rounds = value.round();
+                (context as Element).markNeedsBuild();
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              ref.read(timerSettingsProvider.notifier).updateSettings(
+                    focusRounds: rounds,
+                  );
+              Navigator.pop(context);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final timerState = ref.watch(timerControllerProvider);
@@ -54,6 +166,30 @@ class _TimerPageState extends ConsumerState<TimerPage>
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'adjust_breaks') {
+                _showAdjustBreaksDialog(context);
+              } else if (value == 'set_rounds') {
+                _showSetRoundsDialog(context);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'adjust_breaks',
+                child: Text('Adjust Breaks'),
+              ),
+              const PopupMenuItem(
+                value: 'set_rounds',
+                child: Text('Set Focus Rounds'),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           // Animated flame background
@@ -146,17 +282,17 @@ class _TimerPageState extends ConsumerState<TimerPage>
                         alignment: Alignment.center,
                         children: [
                           // Show water fill only when running or stopping
-                          // if (timerState.status == TimerStatus.running ||
-                          //     timerState.status == TimerStatus.paused)
-                          //   ClipOval(
-                          //     child: WaterFillAnimation(
-                          //       progress: timerState.progress,
-                          //       size: 300,
-                          //       color: timerState.isBreak
-                          //           ? TimerTheme.breakWater
-                          //           : TimerTheme.focusWater,
-                          //     ),
-                          //   ),
+                          if (timerState.status == TimerStatus.running ||
+                              timerState.status == TimerStatus.paused)
+                            ClipOval(
+                              child: WaterFillAnimation(
+                                progress: timerState.progress,
+                                size: 300,
+                                color: timerState.isBreak
+                                    ? TimerTheme.breakWater
+                                    : TimerTheme.focusWater,
+                              ),
+                            ),
                           ScaleTransition(
                             scale: _startAnimation,
                             child: FlameProgressRing(
@@ -170,9 +306,9 @@ class _TimerPageState extends ConsumerState<TimerPage>
                                   _handleTimerStart();
                                 }
                               },
-                              // color: timerState.isBreak
-                              //     ? TimerTheme.breakRing
-                              //     : TimerTheme.focusRing,
+                              color: timerState.isBreak
+                                  ? TimerTheme.breakRing
+                                  : TimerTheme.focusRing,
                             ),
                           ),
                           AnimatedSwitcher(
