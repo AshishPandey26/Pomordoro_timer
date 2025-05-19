@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
-import 'features/timer/presentation/pages/timer_page.dart';
+import 'features/home/presentation/pages/home_page.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -25,9 +25,9 @@ class _MyAppState extends ConsumerState<MyApp> {
       data: themeData,
       duration: const Duration(milliseconds: 400), // Animation duration
       child: MaterialApp(
-        title: 'Fiery Pomodoro',
+        title: 'Phoenix Timer',
         theme: themeData,
-        home: const TimerPage(),
+        home: const HomePage(),
         debugShowCheckedModeBanner: false,
       ),
     );

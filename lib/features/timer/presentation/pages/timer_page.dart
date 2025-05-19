@@ -253,7 +253,13 @@ class _TimerPageState extends ConsumerState<TimerPage>
                     top: 0,
                     right: 16,
                     child: PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, color: Colors.white70),
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: appThemeType == AppThemeType.zenForest
+                            ? theme.colorScheme
+                                .onBackground // Dark color for light theme
+                            : Colors.white70, // White color for dark themes
+                      ),
                       color: Theme.of(context)
                           .colorScheme
                           .surface

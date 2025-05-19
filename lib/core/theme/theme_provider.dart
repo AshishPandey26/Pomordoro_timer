@@ -7,13 +7,13 @@ final themeProvider = StateNotifierProvider<ThemeNotifier, AppThemeType>((ref) {
 });
 
 class ThemeNotifier extends StateNotifier<AppThemeType> {
-  ThemeNotifier() : super(AppThemeType.fiery) {
+  ThemeNotifier() : super(AppThemeType.zenForest) {
     _loadTheme();
   }
 
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt('theme') ?? 0;
+    final themeIndex = prefs.getInt('theme') ?? AppThemeType.zenForest.index;
     state = AppThemeType.values[themeIndex];
   }
 
